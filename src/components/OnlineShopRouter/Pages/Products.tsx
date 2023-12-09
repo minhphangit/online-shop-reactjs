@@ -153,7 +153,7 @@ export default function Products({}: Props) {
                 formUpdateProduct.setFieldsValue(record);
               }}
             >
-              Sửa
+              Edit
             </Button>
             <Popconfirm
               title="Xoá sản phẩm"
@@ -162,7 +162,7 @@ export default function Products({}: Props) {
               onConfirm={() => onDeleteProduct(record.id)}
             >
               <Button type="primary" danger>
-                Xóa
+                Delete
               </Button>
             </Popconfirm>
           </Space>
