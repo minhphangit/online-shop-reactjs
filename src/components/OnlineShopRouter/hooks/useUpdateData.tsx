@@ -18,7 +18,7 @@ export default function useUpdateData(dataName: string) {
       setErrorUpdate("");
       return true; // Thêm dòng này để trả về true khi thêm thành công
     } catch (error: any) {
-      setErrorUpdate(error.response.data.message[0]);
+      setErrorUpdate(error.message);
       return false; // Trả về false nếu có lỗi xảy ra
     }
   };

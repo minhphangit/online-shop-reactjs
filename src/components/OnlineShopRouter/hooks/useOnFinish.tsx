@@ -31,7 +31,7 @@ export default function useOnFinish(selected?: any) {
       setError("");
       return true; // Thêm dòng này để trả về true khi thêm thành công
     } catch (error: any) {
-      setError(error.response.data.message[0]);
+      setError(error.message);
       return false; // Trả về false nếu có lỗi xảy ra
     }
   };

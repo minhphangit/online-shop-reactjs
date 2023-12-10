@@ -49,7 +49,6 @@ export default function Orders() {
   const { errorInsert, insertData } = useInsertData("orders");
 
   const { errorDelete, deleteData } = useDeleteData("orders");
-  console.log("««««« OrdersDetail »»»»»", orderDetails);
 
   const onClose = () => {
     setOpen(false);

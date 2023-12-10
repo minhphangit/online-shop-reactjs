@@ -17,7 +17,7 @@ export default function useDeleteData(dataName: string) {
       setErrorDelete("");
       return true;
     } catch (error: any) {
-      setErrorDelete(error.response.data.message[0]);
+      setErrorDelete(error.message);
       return false;
     }
   };

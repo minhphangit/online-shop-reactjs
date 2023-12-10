@@ -1,5 +1,6 @@
 import React from "react";
 import axiosClient from "../configs/axiosClient";
+import { message } from "antd";
 
 export default function useInsertData(dataName: string) {
   const [errorInsert, setEerorInsert] = React.useState("");
@@ -18,7 +19,7 @@ export default function useInsertData(dataName: string) {
       return true; // Thêm dòng này để trả về true khi thêm thành công
     } catch (error: any) {
       console.log(error);
-      setEerorInsert(error.response.data.message[0]);
+      setEerorInsert(error.message);
       return false; // Trả về false nếu có lỗi xảy ra
     }
   };
