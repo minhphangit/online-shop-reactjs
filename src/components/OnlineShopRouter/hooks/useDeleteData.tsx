@@ -6,14 +6,11 @@ export default function useDeleteData(dataName: string) {
 
   const deleteData = async (id: number) => {
     try {
-      const response = await axiosClient.delete(
-        "/online-shop/" + dataName + "/" + id,
-        {
-          headers: {
-            Authorization: "Bearer " + localStorage.getItem("access_token"),
-          },
-        }
-      );
+      const response = await axiosClient.delete("/" + dataName + "/" + id, {
+        headers: {
+          Authorization: "Bearer " + localStorage.getItem("token"),
+        },
+      });
       setErrorDelete("");
       return true;
     } catch (error: any) {

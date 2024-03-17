@@ -1,36 +1,16 @@
 import React from "react";
-//form hook
-import { SubmitHandler, useForm } from "react-hook-form";
-//yup
-import * as yup from "yup";
-import { yupResolver } from "@hookform/resolvers/yup";
-//axios
+import { LockOutlined, UserOutlined } from "@ant-design/icons";
+import { Button, Checkbox, Form, Input } from "antd";
 import axiosClient from "../configs/axiosClient";
-type Props = {};
 
-interface IFormInput {
-  username: string;
-  password: string;
-}
-const shema = yup.object({
-  username: yup.string().email().required(),
-  password: yup.string().required().min(3).max(20),
-});
-export default function LoginWithAxios({}: Props) {
-  const {
-    register,
-    handleSubmit,
-    formState: { errors },
-  } = useForm<IFormInput>({
-    resolver: yupResolver(shema),
-  });
-  const onSubmit: SubmitHandler<IFormInput> = async (data) => {
+export default function LoginWithAxios() {
+  const onFinish = async (values: any) => {
     try {
-      const response: any = await axiosClient.post("/auth/login", data);
+      const response: any = await axiosClient.post("/auth/login", values);
 
-      if (response.data.loggedInUser) {
+      if (response.data) {
         alert("Login successful");
-        localStorage.setItem("access_token", response.data.access_token);
+        localStorage.setItem("token", response.data.token);
       } else {
         alert("Username or password incorrect");
       }
@@ -42,40 +22,50 @@ export default function LoginWithAxios({}: Props) {
     }
   };
   return (
-    <div>
-      <form onClick={handleSubmit(onSubmit)}>
-        <div
-          style={{
-            display: "flex",
-            flexDirection: "column",
-            maxWidth: 320,
-            gap: 12,
-          }}
-        >
-          <div>
-            <label htmlFor="username">Username</label>
-            <input
-              {...register("username")}
-              className="form-control"
-              id="username"
-            />
-            <span className="text-danger">{errors.username?.message}</span>
-          </div>
-          <div>
-            <label htmlFor="password">password</label>
-            <input
-              type="password"
-              {...register("password")}
-              className="form-control"
-              id="password"
-            />
-            <span className="text-danger">{errors.password?.message}</span>
-          </div>
-          <button type="submit" className="btn btn-primary">
-            Login
-          </button>
-        </div>
-      </form>
-    </div>
+    <Form
+      name="normal_login"
+      className="login-form"
+      initialValues={{ remember: true }}
+      onFinish={onFinish}
+      layout="horizontal"
+      labelCol={{ span: 8 }}
+      wrapperCol={{ span: 6 }}
+    >
+      <Form.Item
+        name="email"
+        rules={[{ required: true, message: "Vui lòng nhập email!" }]}
+      >
+        <Input
+          prefix={<UserOutlined className="site-form-item-icon" />}
+          placeholder="example@gmail.com"
+        />
+      </Form.Item>
+      <Form.Item
+        name="password"
+        rules={[{ required: true, message: "Vui lòng nhập mật khẩu!" }]}
+      >
+        <Input
+          prefix={<LockOutlined className="site-form-item-icon" />}
+          type="password"
+          placeholder="Mật khẩu"
+        />
+      </Form.Item>
+      <Form.Item>
+        <Form.Item name="remember" valuePropName="checked" noStyle>
+          <Checkbox>Nhớ mật khẩu</Checkbox>
+        </Form.Item>
+
+        <a className="login-form-forgot" href="">
+          Quên mật khẩu
+        </a>
+      </Form.Item>
+
+      <Form.Item wrapperCol={{ span: 16 }}>
+        <Button type="primary" htmlType="submit" className="login-form-button">
+          Đăng nhập
+        </Button>
+        Or <a href="">Tạo tài khoản!</a>
+      </Form.Item>
+    </Form>
   );
 }

@@ -5,16 +5,14 @@ export default function useGetAllData(
   defaultValue: any = [],
   dataName: string = "",
   refresh: boolean = false,
-  id: number
+  id: any
 ) {
   const [data, setData] = React.useState(defaultValue);
   React.useEffect(() => {
     const getDataById = async () => {
       try {
-        const response = await axiosClient.get(
-          `/online-shop/${dataName}/${id}`
-        );
-        setData(response.data);
+        const response = await axiosClient.get(`/${dataName}/${id}`);
+        setData(response.data.payload);
       } catch (error) {
         console.log(error);
       }

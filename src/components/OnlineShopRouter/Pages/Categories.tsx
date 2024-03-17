@@ -2,6 +2,7 @@ import React from "react";
 import axiosClient from "../configs/axiosClient";
 import {
   Button,
+  Divider,
   Form,
   Input,
   Modal,
@@ -11,6 +12,7 @@ import {
   message,
 } from "antd";
 import { QuestionCircleOutlined } from "@ant-design/icons";
+import { MdAddToPhotos } from "react-icons/md";
 import useGetAllData from "../hooks/useGetAllData";
 import useUpdateData from "../hooks/useUpdateData";
 import useInsertData from "../hooks/useInsertData";
@@ -23,6 +25,7 @@ export default function Categories({}: Props) {
   //declare states
   const [refresh, setRefresh] = React.useState(false);
   const [open, setOpen] = React.useState(false);
+  const [openAdd, setOpenAdd] = React.useState(false);
   const [selected, setSelected] = React.useState(-1);
   //using hooks
   const [categories] = useGetAllData([], "categories", refresh);
@@ -36,6 +39,7 @@ export default function Categories({}: Props) {
       setRefresh(!refresh);
       message.success("Insert category successfully", 3);
       form.resetFields();
+      setOpenAdd(!openAdd);
     } else {
       console.log(errorInsert);
       errorInsert && message.error(errorInsert, 2);
@@ -53,8 +57,8 @@ export default function Categories({}: Props) {
       errorUpdate && message.error(errorUpdate, 2);
     }
   };
-  const onDeleteCategory = async (id: number) => {
-    const success = await deleteData(id);
+  const onDeleteCategory = async (_id: number) => {
+    const success = await deleteData(_id);
     if (success) {
       setRefresh(!refresh);
       message.success("Delete category successfully", 3);
@@ -66,25 +70,21 @@ export default function Categories({}: Props) {
 
   const columns: any = [
     {
-      title: "Id",
-      dataIndex: "id",
-      key: "id",
-      align: "right",
-    },
-    {
-      title: "Name",
+      title: "Tên danh mục",
       dataIndex: "name",
       key: "name",
     },
     {
-      title: "Description",
+      title: "Mô tả",
       dataIndex: "description",
       key: "description",
     },
     {
-      title: "Action",
+      title: "",
       dataIndex: "action",
       key: "action",
+      align: "right",
+
       render: (text: any, record: any, index: number) => {
         return (
           <Space>
@@ -92,20 +92,25 @@ export default function Categories({}: Props) {
               type="primary"
               onClick={() => {
                 setOpen(true);
-                setSelected(record.id);
+                setSelected(record._id);
                 formUpdateCate.setFieldsValue(record);
               }}
             >
-              Edit
+              Sửa
             </Button>
             <Popconfirm
-              title="Delete a category"
-              description="Are you sure to delete this category?"
+              title="Xoá danh mục"
+              description="Bạn có chắc chắn xóa danh mục này?"
+              okText="Xoá"
+              okButtonProps={{
+                style: { backgroundColor: "red" },
+              }}
+              cancelText="Đóng"
               icon={<QuestionCircleOutlined style={{ color: "red" }} />}
-              onConfirm={() => onDeleteCategory(record.id)}
+              onConfirm={() => onDeleteCategory(record._id)}
             >
               <Button type="primary" danger>
-                Delete
+                Xoá
               </Button>
             </Popconfirm>
           </Space>
@@ -115,44 +120,56 @@ export default function Categories({}: Props) {
   ];
   return (
     <div>
-      <h3 className="text-center">MANAGEMENT CATEGORIES</h3>
-      <Form
-        form={form}
-        onFinish={onCreateCategory}
-        name="insertForm"
-        labelCol={{ span: 8 }}
-        wrapperCol={{ span: 8 }}
-        layout="horizontal"
-        style={{ marginTop: 40 }}
-      >
-        <h4 className="text-center">CREATE NEW CATEGORY</h4>
-        <Form.Item
-          className="mt-5"
-          label="Category name"
-          name="name"
-          rules={[
-            {
-              required: true,
-              message: "Category name cannot be empty",
-            },
-          ]}
-          hasFeedback
-        >
-          <Input placeholder="Enter a category name" />
-        </Form.Item>
-        <Form.Item label="Description" name="description">
-          <Input placeholder="Enter a Description" />
-        </Form.Item>
-        <Form.Item wrapperCol={{ offset: 8 }}>
-          <Button type="primary" htmlType="submit">
-            Create new category
-          </Button>
-        </Form.Item>
-      </Form>
+      <h3 className="text-center">QUẢN LÝ DANH MỤC</h3>
+      {/* Modal add new item */}
       <Modal
-        title="Update Category"
-        okText="Update"
-        cancelText="Cancel"
+        title="Thêm mới danh mục"
+        okText="Thêm"
+        cancelText="Đóng"
+        okButtonProps={{
+          style: { backgroundColor: "#85c547" },
+        }}
+        open={openAdd}
+        onOk={() => {
+          form.submit();
+        }}
+        onCancel={() => {
+          setOpenAdd(false);
+        }}
+      >
+        <Divider />
+        <Form
+          form={form}
+          onFinish={onCreateCategory}
+          name="insertForm"
+          labelCol={{ span: 8 }}
+          wrapperCol={{ span: 12 }}
+          layout="horizontal"
+        >
+          <Form.Item
+            label="Tên danh mục"
+            name="name"
+            rules={[
+              {
+                required: true,
+                message: "Tên danh mục không được để trống",
+              },
+            ]}
+            hasFeedback
+          >
+            <Input placeholder="Nhập tên danh mục" />
+          </Form.Item>
+          <Form.Item label="Mô tả" name="description">
+            <Input.TextArea rows={3} placeholder="Nhập mô tả " />
+          </Form.Item>
+        </Form>
+      </Modal>
+
+      {/* Modal update item */}
+      <Modal
+        title="Cập nhập danh mục"
+        okText="Cập nhập"
+        cancelText="Đóng"
         open={open}
         onOk={() => {
           formUpdateCate.submit();
@@ -161,34 +178,50 @@ export default function Categories({}: Props) {
           setOpen(false);
         }}
       >
+        <Divider />
         <Form
           form={formUpdateCate}
           onFinish={onUpdateCategory}
           name="insertForm"
           labelCol={{ span: 8 }}
-          wrapperCol={{ span: 8 }}
+          wrapperCol={{ span: 12 }}
           layout="horizontal"
-          style={{ marginTop: 40 }}
         >
           <Form.Item
-            className="mt-5"
-            label="Category name"
+            label="Tên danh mục"
             name="name"
             rules={[
               {
                 required: true,
-                message: "Category name cannot be empty",
+                message: "Tên danh mục không được để trống",
               },
             ]}
             hasFeedback
           >
-            <Input placeholder="Enter a category name" />
+            <Input placeholder="Nhập tên danh mục" />
           </Form.Item>
-          <Form.Item label="Description" name="description">
-            <Input placeholder="Enter a Description" />
+          <Form.Item label="Mô tả" name="description">
+            <Input.TextArea rows={3} placeholder="Nhập mô tả " />
           </Form.Item>
         </Form>
       </Modal>
+
+      <div className="d-flex justify-content-end">
+        <Button
+          type="primary"
+          style={{
+            backgroundColor: "#85C547",
+            borderColor: "#85C547",
+          }}
+          onClick={() => {
+            setOpenAdd(true);
+          }}
+        >
+          Thêm mới
+        </Button>
+      </div>
+
+      {/* Table products */}
       <Table dataSource={categories} columns={columns} />
     </div>
   );

@@ -26,31 +26,31 @@ const router = createBrowserRouter([
         element: <Categories />,
       },
       {
-        path: "/online-shop/data-management/categories",
+        path: "categories",
         element: <Categories />,
       },
       {
-        path: "/online-shop/data-management/employees",
+        path: "employees",
         element: <Employees />,
       },
       {
-        path: "/online-shop/data-management/products",
+        path: "products",
         element: <Products />,
       },
       {
-        path: "/online-shop/data-management/customers",
+        path: "customers",
         element: <Customers />,
       },
       {
-        path: "/online-shop/data-management/suppliers",
+        path: "suppliers",
         element: <Suppliers />,
       },
       {
-        path: "/online-shop/data-management/orders",
+        path: "orders",
         element: <Orders />,
       },
       {
-        path: "/online-shop/data-management/login",
+        path: "auth/login",
         element: <LoginWithAxios />,
       },
     ],

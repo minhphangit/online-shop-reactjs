@@ -6,12 +6,12 @@ export default function useUpdateData(dataName: string) {
 
   const updateData = async (values: any, selected: any) => {
     try {
-      const response = await axiosClient.patch(
-        "/online-shop/" + dataName + "/" + selected,
+      const response = await axiosClient.put(
+        "/" + dataName + "/" + selected,
         values,
         {
           headers: {
-            Authorization: "Bearer " + localStorage.getItem("access_token"),
+            Authorization: "Bearer " + localStorage.getItem("token"),
           },
         }
       );

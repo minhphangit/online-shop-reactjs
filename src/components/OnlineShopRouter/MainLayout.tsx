@@ -37,7 +37,7 @@ const items: MenuItem[] = [
     getItem("Employees", "employees"),
     getItem("Orders", "orders"),
   ]),
-  getItem("Login", "login", <FileOutlined />),
+  getItem("Login", "auth/login", <FileOutlined />),
 ];
 
 const MainLayout: React.FC = () => {
@@ -59,28 +59,21 @@ const MainLayout: React.FC = () => {
         <Menu
           theme="dark"
           defaultOpenKeys={["categories"]}
-          defaultSelectedKeys={[
-            location.pathname.replace("/online-shop/data-management/", ""),
-          ]}
           mode="inline"
           items={items}
           onSelect={(item) => {
             console.log(item);
-            navigate("/online-shop/data-management/" + item.key);
+            navigate(item.key);
           }}
         />
       </Sider>
       <Layout>
         <Header style={{ padding: 0, background: colorBgContainer }}>
           <div>
-            <h3 className="text-center">ADMIN DASHBORAD</h3>
+            <h3 className="text-center">TRANG QUẢN LÝ</h3>
           </div>
         </Header>
-        <Content style={{ margin: "0 16px" }}>
-          <Breadcrumb style={{ margin: "16px 0" }}>
-            <Breadcrumb.Item>User</Breadcrumb.Item>
-            <Breadcrumb.Item>Bill</Breadcrumb.Item>
-          </Breadcrumb>
+        <Content style={{ margin: "0 16px", marginTop: "12px" }}>
           <div
             style={{
               padding: 24,

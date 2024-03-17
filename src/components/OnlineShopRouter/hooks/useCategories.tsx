@@ -12,8 +12,8 @@ export default function useCategories(
   }, [refresh]);
   const getAllCategories = async () => {
     try {
-      const response = await axiosClient.get("/online-shop/categories");
-      setCategories(response.data);
+      const response = await axiosClient.get("/categories");
+      setCategories(response.data.payload);
     } catch (error) {
       console.log(error);
     }

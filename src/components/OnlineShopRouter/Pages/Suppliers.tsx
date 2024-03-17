@@ -22,6 +22,7 @@ export default function Suppliers({}: Props) {
   const [formInsertSupplier] = Form.useForm();
   const [formUpdateSupplier] = Form.useForm();
   const [open, setOpen] = React.useState(false);
+  const [openAdd, setOpenAdd] = React.useState(false);
   const [selectedId, setSelectedId] = React.useState(-1);
   const [refresh, setRefresh] = React.useState(false);
   const [suppliers] = useGetAllData([], "suppliers", refresh);
@@ -34,6 +35,7 @@ export default function Suppliers({}: Props) {
       setRefresh(!refresh);
       message.success("Successfully added Suppliers", 2);
       formInsertSupplier.resetFields();
+      setOpenAdd(!openAdd);
     } else {
       console.log(errorInsert);
       errorInsert && message.error(errorInsert, 2);
@@ -51,8 +53,8 @@ export default function Suppliers({}: Props) {
       errorUpdate && message.error(errorUpdate, 2);
     }
   };
-  const onDeleteSupplier = async (id: number) => {
-    const success = await deleteData(id);
+  const onDeleteSupplier = async (_id: number) => {
+    const success = await deleteData(_id);
     if (success) {
       setRefresh(!refresh);
       message.success("Delete Supplier successfully", 3);
@@ -63,32 +65,27 @@ export default function Suppliers({}: Props) {
   };
   const columns = [
     {
-      title: "id",
-      dataIndex: "id",
-      key: "id",
-    },
-    {
-      title: "name",
+      title: "Tên nhà cung cấp",
       dataIndex: "name",
       key: "name",
     },
     {
-      title: "email",
+      title: "Email",
       dataIndex: "email",
       key: "email",
     },
     {
-      title: "address",
+      title: "Địa chỉ",
       dataIndex: "address",
       key: "address",
     },
     {
-      title: "phoneNumber",
+      title: "Số điện thoại",
       dataIndex: "phoneNumber",
       key: "phoneNumber",
     },
     {
-      title: "action",
+      title: "",
       dataIndex: "action",
       key: "action",
       render: (text: any, record: any, index: number) => {
@@ -98,20 +95,25 @@ export default function Suppliers({}: Props) {
               type="primary"
               onClick={() => {
                 setOpen(true);
-                setSelectedId(record.id);
+                setSelectedId(record._id);
                 formUpdateSupplier.setFieldsValue(record);
               }}
             >
-              Edit
+              Sửa
             </Button>
             <Popconfirm
-              title="Delete a Supplier"
-              description="Are you sure to delete this Supplier?"
+              title="Xoá nhà cung cấp "
+              description="Bạn có chắc chắn xóa không?"
+              okButtonProps={{
+                style: { backgroundColor: "red" },
+              }}
+              okText="Xoá"
+              cancelText="Đóng"
               icon={<QuestionCircleOutlined style={{ color: "red" }} />}
-              onConfirm={() => onDeleteSupplier(record.id)}
+              onConfirm={() => onDeleteSupplier(record._id)}
             >
               <Button type="primary" danger>
-                Delete
+                Xoá
               </Button>
             </Popconfirm>
           </Space>
@@ -121,87 +123,108 @@ export default function Suppliers({}: Props) {
   ];
   return (
     <div>
-      <h3 className="text-center">MANAGEMENT SUPPLIERS</h3>
-      <Form
-        form={formInsertSupplier}
-        labelCol={{ span: 8 }}
-        wrapperCol={{ span: 8 }}
-        onFinish={onCreateSupplier}
-        name="insertForm"
-        layout="horizontal"
-        style={{ marginTop: 40 }}
+      <h3 className="text-center">QUẢN LÝ NHÀ CUNG CẤP</h3>
+      {/* Modal add new item */}
+      <Modal
+        title="Thêm mới nhà cung cấp"
+        okText="Thêm"
+        cancelText="Đóng"
+        okButtonProps={{
+          style: { backgroundColor: "#85c547" },
+        }}
+        open={openAdd}
+        onOk={() => {
+          formInsertSupplier.submit();
+        }}
+        onCancel={() => {
+          setOpenAdd(false);
+        }}
       >
-        <h4 className="text-center">CREATE NEW SUPPLIERS</h4>
-        <Form.Item
-          className="mt-5"
-          label="name"
-          name="name"
-          rules={[
-            {
-              required: true,
-              message: "name cannot be empty",
-            },
-          ]}
-          hasFeedback
+        <Divider />
+        <Form
+          form={formInsertSupplier}
+          labelCol={{ span: 8 }}
+          wrapperCol={{ span: 12 }}
+          onFinish={onCreateSupplier}
+          name="insertForm"
+          layout="horizontal"
         >
-          <Input placeholder="Enter a name" />
-        </Form.Item>
+          <Form.Item
+            label="Tên nhà cung cấp"
+            name="name"
+            rules={[
+              {
+                required: true,
+                message: "Tên nhà cung cấp không được để trống",
+              },
+            ]}
+            hasFeedback
+          >
+            <Input placeholder="Enter a name" />
+          </Form.Item>
 
-        <Form.Item
-          className="mt-5"
-          label="email"
-          name="email"
-          rules={[
-            {
-              required: true,
-              message: "email cannot be empty",
-            },
-            {
-              type: "email",
-              message: "Please enter a valid email",
-            },
-          ]}
-          hasFeedback
+          <Form.Item
+            label="Email"
+            name="email"
+            rules={[
+              {
+                required: true,
+                message: "email không được để trống",
+              },
+              {
+                type: "email",
+                message: "Vui lòng nhập đúng định dạnh email",
+              },
+            ]}
+            hasFeedback
+          >
+            <Input placeholder="example@gmail.com" />
+          </Form.Item>
+
+          <Form.Item
+            label="Địa chỉ"
+            name="address"
+            rules={[
+              {
+                required: true,
+                message: "Địa chỉ không được để trống !",
+              },
+            ]}
+            hasFeedback
+          >
+            <Input placeholder="460 Trần Cao Vân, Đà Nẵng" />
+          </Form.Item>
+
+          <Form.Item
+            name="Số điện thoại"
+            label="Phone Number"
+            rules={[
+              { required: true, message: "Vui lòng nhập số điện thoại !" },
+            ]}
+          >
+            <Input placeholder="0395511399" />
+          </Form.Item>
+        </Form>
+      </Modal>
+      <div className="d-flex justify-content-end">
+        <Button
+          type="primary"
+          style={{
+            backgroundColor: "#85C547",
+            borderColor: "#85C547",
+          }}
+          onClick={() => {
+            setOpenAdd(true);
+          }}
         >
-          <Input placeholder="Enter a email" />
-        </Form.Item>
-
-        <Form.Item
-          className="mt-5"
-          label="address"
-          name="address"
-          rules={[
-            {
-              required: true,
-              message: "address cannot be empty",
-            },
-          ]}
-          hasFeedback
-        >
-          <Input placeholder="Enter a address" />
-        </Form.Item>
-
-        <Form.Item
-          name="phoneNumber"
-          label="Phone Number"
-          rules={[
-            { required: true, message: "Please input your phone number!" },
-          ]}
-        >
-          <Input placeholder="Enter a phone number" />
-        </Form.Item>
-
-        <Form.Item wrapperCol={{ offset: 8, span: 8 }}>
-          <Button type="primary" htmlType="submit">
-            Create new Supplier
-          </Button>
-        </Form.Item>
-      </Form>
+          Thêm mới
+        </Button>
+      </div>
       <Table dataSource={suppliers} columns={columns} />
       <Modal
-        title="Update Supplier information"
-        okText="Update"
-        cancelText="Cancle"
+        title="Cập nhập nhà cung cấp"
+        okText="Cập nhập"
+        cancelText="Đóng"
         open={open}
         onOk={() => {
           formUpdateSupplier.submit();
@@ -214,20 +237,18 @@ export default function Suppliers({}: Props) {
         <Form
           form={formUpdateSupplier}
           labelCol={{ span: 8 }}
-          wrapperCol={{ span: 8 }}
+          wrapperCol={{ span: 12 }}
           onFinish={onUpdateSupplier}
           name="insertForm"
           layout="horizontal"
-          style={{ marginTop: 40 }}
         >
           <Form.Item
-            className="mt-5"
-            label="name"
+            label="Tên nhà cung cấp"
             name="name"
             rules={[
               {
                 required: true,
-                message: "name cannot be empty",
+                message: "Tên nhà cung cấp không được để trống",
               },
             ]}
             hasFeedback
@@ -236,47 +257,45 @@ export default function Suppliers({}: Props) {
           </Form.Item>
 
           <Form.Item
-            className="mt-5"
-            label="email"
+            label="Email"
             name="email"
             rules={[
               {
                 required: true,
-                message: "email cannot be empty",
+                message: "email không được để trống",
               },
               {
                 type: "email",
-                message: "Please enter a valid email",
+                message: "Vui lòng nhập đúng định dạnh email",
               },
             ]}
             hasFeedback
           >
-            <Input placeholder="Enter a email" />
+            <Input placeholder="example@gmail.com" />
           </Form.Item>
 
           <Form.Item
-            className="mt-5"
-            label="address"
+            label="Địa chỉ"
             name="address"
             rules={[
               {
                 required: true,
-                message: "address cannot be empty",
+                message: "Địa chỉ không được để trống !",
               },
             ]}
             hasFeedback
           >
-            <Input placeholder="Enter a address" />
+            <Input placeholder="460 Trần Cao Vân, Đà Nẵng" />
           </Form.Item>
 
           <Form.Item
             name="phoneNumber"
-            label="Phone Number"
+            label="Số điện thoại"
             rules={[
-              { required: true, message: "Please input your phone number!" },
+              { required: true, message: "Vui lòng nhập số điện thoại !" },
             ]}
           >
-            <Input placeholder="Enter a phone number" />
+            <Input placeholder="0395511399" />
           </Form.Item>
         </Form>
       </Modal>

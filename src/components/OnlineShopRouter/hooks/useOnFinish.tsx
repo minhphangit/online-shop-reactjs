@@ -8,25 +8,21 @@ export default function useOnFinish(selected?: any) {
       if (selected) {
         // Update category
         const response = await axiosClient.patch(
-          "/online-shop/categories/" + selected,
+          "/categories/" + selected,
           values,
           {
             headers: {
-              Authorization: "Bearer " + localStorage.getItem("access_token"),
+              Authorization: "Bearer " + localStorage.getItem("token"),
             },
           }
         );
       } else {
         // Create category
-        const response = await axiosClient.post(
-          "/online-shop/categories",
-          values,
-          {
-            headers: {
-              Authorization: "Bearer " + localStorage.getItem("access_token"),
-            },
-          }
-        );
+        const response = await axiosClient.post("/categories", values, {
+          headers: {
+            Authorization: "Bearer " + localStorage.getItem("token"),
+          },
+        });
       }
       setError("");
       return true; // Thêm dòng này để trả về true khi thêm thành công

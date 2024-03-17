@@ -29,6 +29,7 @@ export default function Employees({}: Props) {
   const [formUpdateEmployee] = Form.useForm();
   //declare states
   const [open, setOpen] = React.useState(false);
+  const [openAdd, setOpenAdd] = React.useState(false);
   const [refresh, setRefresh] = React.useState(false);
   const [selectedId, setSelectedId] = React.useState(-1);
   //states get data from Api
@@ -43,6 +44,7 @@ export default function Employees({}: Props) {
       setRefresh(!refresh);
       message.success("Successfully added Employees", 2);
       formInsertEmployee.resetFields();
+      setOpenAdd(!openAdd);
     } else {
       console.log(errorInsert);
       errorInsert && message.error(errorInsert, 2);
@@ -60,8 +62,8 @@ export default function Employees({}: Props) {
       errorUpdate && message.error(errorUpdate, 2);
     }
   };
-  const onDeleteEmployee = async (id: number) => {
-    const success = await deleteData(id);
+  const onDeleteEmployee = async (_id: number) => {
+    const success = await deleteData(_id);
     if (success) {
       setRefresh(!refresh);
       message.success("Delete Employee successfully", 3);
@@ -73,37 +75,32 @@ export default function Employees({}: Props) {
 
   const columns: any = [
     {
-      title: "id",
-      dataIndex: "id",
-      key: "id",
-    },
-    {
-      title: "firstName",
+      title: "Họ",
       dataIndex: "firstName",
       key: "firstName",
     },
     {
-      title: "lastName",
+      title: "Tên",
       dataIndex: "lastName",
       key: "lastName",
     },
     {
-      title: "email",
+      title: "Email",
       dataIndex: "email",
       key: "email",
     },
     {
-      title: "address",
+      title: "Địa chỉ",
       dataIndex: "address",
       key: "address",
     },
     {
-      title: "phoneNumber",
+      title: "Số điện thoại",
       dataIndex: "phoneNumber",
       key: "phoneNumber",
     },
     {
-      title: "birthday",
+      title: "Ngày sinh",
       dataIndex: "birthday",
       key: "birthday",
       render: (text: any, record: any, index: number) => {
@@ -112,7 +109,7 @@ export default function Employees({}: Props) {
       },
     },
     {
-      title: "action",
+      title: "",
       dataIndex: "action",
       key: "action",
       render: (text: any, record: any, index: number) => {
@@ -122,20 +119,25 @@ export default function Employees({}: Props) {
               type="primary"
               onClick={() => {
                 setOpen(true);
-                setSelectedId(record.id);
+                setSelectedId(record._id);
                 formUpdateEmployee.setFieldsValue(record);
               }}
             >
-              Edit
+              Sửa
             </Button>
             <Popconfirm
-              title="Delete a Employee"
-              description="Are you sure to delete this Employee?"
+              title="Xoá danh mục"
+              description="Bạn có chắc chắn xoá không?"
+              okText="Xoá"
+              okButtonProps={{
+                style: { backgroundColor: "red" },
+              }}
+              cancelText="Đóng"
               icon={<QuestionCircleOutlined style={{ color: "red" }} />}
-              onConfirm={() => onDeleteEmployee(record.id)}
+              onConfirm={() => onDeleteEmployee(record._id)}
             >
               <Button type="primary" danger>
-                Delete
+                Xoá
               </Button>
             </Popconfirm>
           </Space>
@@ -145,108 +147,138 @@ export default function Employees({}: Props) {
   ];
   return (
     <div>
-      <h3 className="text-center">MANAGEMENT EMPLOYEES</h3>
-      <Form
-        form={formInsertEmployee}
-        labelCol={{ span: 8 }}
-        wrapperCol={{ span: 8 }}
-        onFinish={onCreateEmployee}
-        name="insertForm"
-        layout="horizontal"
-        style={{ marginTop: 40 }}
+      <h3 className="text-center">QUẢN LÝ NHÂN VIÊN</h3>
+      <Modal
+        title="Thêm mới danh mục"
+        okText="Thêm"
+        cancelText="Đóng"
+        okButtonProps={{
+          style: { backgroundColor: "#85c547" },
+        }}
+        open={openAdd}
+        onOk={() => {
+          formInsertEmployee.submit();
+        }}
+        onCancel={() => {
+          setOpenAdd(false);
+        }}
       >
-        <h4 className="text-center">CREATE NEW EMPLOYEE</h4>
-        <Form.Item
-          className="mt-5"
-          label="firstName"
-          name="firstName"
-          rules={[
-            {
-              required: true,
-              message: "firstName cannot be empty",
-            },
-          ]}
-          hasFeedback
+        <Divider />
+        <Form
+          form={formInsertEmployee}
+          labelCol={{ span: 8 }}
+          wrapperCol={{ span: 12 }}
+          onFinish={onCreateEmployee}
+          name="insertForm"
+          layout="horizontal"
         >
-          <Input placeholder="Enter a firstName" />
-        </Form.Item>
+          <Form.Item
+            label="Họ"
+            name="firstName"
+            rules={[
+              {
+                required: true,
+                message: "Họ không được bỏ trống ",
+              },
+            ]}
+            hasFeedback
+          >
+            <Input placeholder="Nhập họ " />
+          </Form.Item>
 
-        <Form.Item
-          className="mt-5"
-          label="lastName"
-          name="lastName"
-          rules={[
-            {
-              required: true,
-              message: "lastName cannot be empty",
-            },
-          ]}
-          hasFeedback
+          <Form.Item
+            label="Tên "
+            name="lastName"
+            rules={[
+              {
+                required: true,
+                message: "Tên không được bỏ trống ",
+              },
+            ]}
+            hasFeedback
+          >
+            <Input placeholder="Nhập tên " />
+          </Form.Item>
+
+          <Form.Item
+            label="Email"
+            name="email"
+            rules={[
+              {
+                required: true,
+                message: "Email không được bỏ trống",
+              },
+              {
+                type: "email",
+                message: "Vui lòng nhập đúng định dạng email",
+              },
+            ]}
+            hasFeedback
+          >
+            <Input placeholder="example@gmail.com" />
+          </Form.Item>
+          <Form.Item
+            label="Mật khẩu"
+            name="password"
+            rules={[
+              {
+                required: true,
+                message: "Mật khẩu không được để trống!",
+              },
+            ]}
+            hasFeedback
+          >
+            <Input.Password placeholder="Nhập mật khẩu" />
+          </Form.Item>
+          <Form.Item
+            label="Địa chỉ "
+            name="address"
+            rules={[
+              {
+                required: true,
+                message: "Địa chỉ không được để trống",
+              },
+            ]}
+            hasFeedback
+          >
+            <Input placeholder="Nhập địa chỉ " />
+          </Form.Item>
+
+          <Form.Item
+            name="phoneNumber"
+            label="Phone Number"
+            rules={[
+              { required: true, message: "Vui lòng nhập số điện thoại !" },
+            ]}
+          >
+            <Input placeholder="0391155349" />
+          </Form.Item>
+
+          <Form.Item label="Ngày sinh" name="birthday">
+            <DatePicker format="DD/MM/YYYY" />
+          </Form.Item>
+        </Form>
+      </Modal>
+      <div className="d-flex justify-content-end">
+        <Button
+          type="primary"
+          style={{
+            backgroundColor: "#85C547",
+            borderColor: "#85C547",
+          }}
+          onClick={() => {
+            setOpenAdd(true);
+          }}
         >
-          <Input placeholder="Enter a lastName" />
-        </Form.Item>
-
-        <Form.Item
-          className="mt-5"
-          label="email"
-          name="email"
-          rules={[
-            {
-              required: true,
-              message: "email cannot be empty",
-            },
-            {
-              type: "email",
-              message: "Please enter a valid email",
-            },
-          ]}
-          hasFeedback
-        >
-          <Input placeholder="Enter a email" />
-        </Form.Item>
-
-        <Form.Item
-          className="mt-5"
-          label="address"
-          name="address"
-          rules={[
-            {
-              required: true,
-              message: "address cannot be empty",
-            },
-          ]}
-          hasFeedback
-        >
-          <Input placeholder="Enter a address" />
-        </Form.Item>
-
-        <Form.Item
-          name="phoneNumber"
-          label="Phone Number"
-          rules={[
-            { required: true, message: "Please input your phone number!" },
-          ]}
-        >
-          <Input placeholder="Enter a phone number" />
-        </Form.Item>
-
-        <Form.Item className="mt-5" label="birthday" name="birthday">
-          <DatePicker format="DD/MM/YYYY" />
-        </Form.Item>
-
-        <Form.Item wrapperCol={{ offset: 8, span: 8 }}>
-          <Button type="primary" htmlType="submit">
-            Create new Employee
-          </Button>
-        </Form.Item>
-      </Form>
-
+          Thêm mới
+        </Button>
+      </div>
       <Table dataSource={Employees} columns={columns} />
 
       <Modal
-        title="Update Employee information"
-        okText="Update"
-        cancelText="Cancle"
+        title="Cập nhập nhân viên"
+        okText="Cập nhập"
+        cancelText="Đóng"
         open={open}
         onOk={() => {
           formUpdateEmployee.submit();
@@ -259,92 +291,100 @@ export default function Employees({}: Props) {
         <Form
           form={formUpdateEmployee}
           labelCol={{ span: 8 }}
-          wrapperCol={{ span: 8 }}
+          wrapperCol={{ span: 12 }}
           onFinish={onUpdateEmployee}
           name="insertForm"
           layout="horizontal"
-          style={{ marginTop: 40 }}
         >
           <Form.Item
-            className="mt-5"
-            label="firstName"
+            label="Họ"
             name="firstName"
             rules={[
               {
                 required: true,
-                message: "firstName cannot be empty",
+                message: "Họ không được bỏ trống ",
               },
             ]}
             hasFeedback
           >
-            <Input placeholder="Enter a firstName" />
+            <Input placeholder="Nhập họ " />
           </Form.Item>
 
           <Form.Item
-            className="mt-5"
-            label="lastName"
+            label="Tên "
             name="lastName"
             rules={[
               {
                 required: true,
-                message: "lastName cannot be empty",
+                message: "Tên không được bỏ trống ",
               },
             ]}
             hasFeedback
           >
-            <Input placeholder="Enter a lastName" />
+            <Input placeholder="Nhập tên " />
           </Form.Item>
 
           <Form.Item
-            className="mt-5"
-            label="email"
+            label="Email"
             name="email"
             rules={[
               {
                 required: true,
-                message: "email cannot be empty",
+                message: "Email không được bỏ trống",
               },
               {
                 type: "email",
-                message: "Please enter a valid email",
+                message: "Vui lòng nhập đúng định dạng email",
               },
             ]}
             hasFeedback
           >
-            <Input placeholder="Enter a email" />
+            <Input placeholder="example@gmail.com" />
           </Form.Item>
-
           <Form.Item
-            className="mt-5"
-            label="address"
+            label="Mật khẩu"
+            name="password"
+            rules={[
+              {
+                required: true,
+                message: "Mật khẩu không được để trống!",
+              },
+            ]}
+            hasFeedback
+          >
+            <Input.Password placeholder="Nhập mật khẩu" />
+          </Form.Item>
+          <Form.Item
+            label="Địa chỉ "
             name="address"
             rules={[
               {
                 required: true,
-                message: "address cannot be empty",
+                message: "Địa chỉ không được để trống",
               },
             ]}
             hasFeedback
           >
-            <Input placeholder="Enter a address" />
+            <Input placeholder="Nhập địa chỉ " />
           </Form.Item>
 
           <Form.Item
+            label="Số điện thoại"
             name="phoneNumber"
-            label="Phone Number"
             rules={[
-              { required: true, message: "Please input your phone number!" },
+              { required: true, message: "Vui lòng nhập số điện thoại !" },
             ]}
           >
-            <Input placeholder="Enter a phone number" />
+            <Input placeholder="0391155349" />
           </Form.Item>
+
           <Form.Item
             name="birthday"
-            label="Date of Birth"
+            label="Ngày sinh"
             rules={[
               {
                 required: true,
-                message: "Date of Birth field required!",
+                message: "Ngày sinh không được để trống !",
               },
             ]}
             getValueProps={(e: string) => ({
